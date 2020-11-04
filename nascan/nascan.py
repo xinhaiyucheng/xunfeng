@@ -12,7 +12,7 @@ if __name__ == "__main__":
         NACHANGE = [0]
         thread.start_new_thread(
             monitor, (CONFIG_INI, STATISTICS, NACHANGE))  # 心跳线程
-        thread.start_new_thread(cruise, (STATISTICS, MASSCAN_AC))  # 失效记录删除线程
+        #thread.start_new_thread(cruise, (STATISTICS, MASSCAN_AC))  # 失效记录删除线程
         socket.setdefaulttimeout(int(CONFIG_INI['Timeout']) / 2)  # 设置连接超时
         ac_data = []
         while True:
