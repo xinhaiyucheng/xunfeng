@@ -283,13 +283,19 @@ def search_result_xls():
         result = query.strip().split(';')
         filter_ = querylogic(result)
         cursor = Mongo.coll['Info'].find(filter_).sort('time', -1)
-        title_tup = ('IP', '端口号', '主机名', '服务类型')
+        title_tup = ('IP', '端口号', '主机名', '服务类型', 'title')
         xls = [title_tup, ]
         for info in cursor:
-            item = (
-                info.get('ip'), info.get('port'),
-                info.get('hostname'), info.get('server')
-            )
+            try:
+                item = (
+                    info.get('ip'), info.get('port'),
+                    info.get('hostname'), info.get('server'),info.get('webinfo').get('title')
+                )
+            except:
+                item = (
+                    info.get('ip'), info.get('port'),
+                    info.get('hostname'), info.get('server'), ''
+                )
             xls.append(item)
         file = write_data(xls, 'search_result')
         resp = make_response(file.getvalue())
