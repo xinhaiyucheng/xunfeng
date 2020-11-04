@@ -118,7 +118,7 @@ def Addtask():
 @logincheck
 def Task():
     page = int(request.args.get('page', '1'))
-    cursor = Mongo.coll['Task'].find().sort('time', -1).limit(page_size).skip((page - 1) * page_size)
+    cursor = Mongo.coll['Task'].find({},{'target':0}).sort('time', -1).limit(page_size).skip((page - 1) * page_size)
     return render_template('task.html', item=cursor)
 
 
