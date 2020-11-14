@@ -5,6 +5,7 @@ import log
 import datetime
 import time
 import base64
+import traceback
 
 def format_config(config_name, config_info):
     mark_list = []
@@ -19,7 +20,7 @@ def format_config(config_name, config_info):
                 name, location, key, value = mark.strip().split("|", 3)
                 mark_list.append([name.lower(), location, key, value])
     except Exception, e:
-        print e
+        traceback.print_exc()
     return mark_list
 
 
@@ -46,7 +47,7 @@ def monitor(CONFIG_INI, STATISTICS, NACHANGE):
             CONFIG_INI.clear()
             CONFIG_INI.update(new_config)
         except Exception, e:
-            print e
+            traceback.print_exc()
         time.sleep(30)
 
 

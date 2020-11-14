@@ -33,7 +33,7 @@ class ThreadNum(threading.Thread):
                 _s.statistics = self.statistics  # 提供统计信息
                 _s.run()
             except Exception, e:
-                print e
+                traceback.print_exc()
             finally:
                 self.queue.task_done()
 

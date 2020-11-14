@@ -9,6 +9,7 @@ import time
 import ssl
 import gzip
 import StringIO
+import traceback
 
 try:
     _create_unverified_https_context = ssl._create_unverified_context  # 忽略证书错误
