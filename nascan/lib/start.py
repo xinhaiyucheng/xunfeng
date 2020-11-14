@@ -5,6 +5,7 @@ import threading
 import scan
 import icmp
 import cidr
+import traceback
 
 AC_PORT_LIST = {}
 MASSCAN_AC = 0
@@ -50,39 +51,42 @@ class start:
     def run(self):
         global AC_PORT_LIST
         all_ip_list = []
-        for ip in self.scan_list:
-            if "/" in ip:
-                ip = cidr.CIDR(ip)
-            if not ip:
-                continue
-            ip_list = self.get_ip_list(ip)
-            for white_ip in self.white_list:
-                if white_ip in ip_list:
-                    ip_list.remove(white_ip)
-            if self.mode == 1:
-                masscan_path = self.config_ini['Masscan'].split('|')[2]
-                masscan_rate = self.config_ini['Masscan'].split('|')[1]
-                # 如果用户在前台关闭了ICMP存活探测则进行全IP段扫描
-                if self.icmp:
-                    ip_list = self.get_ac_ip(ip_list)
-                self.masscan_ac[0] = 1
-                # 如果安装了Masscan即使用Masscan进行全端口扫描
-                AC_PORT_LIST = self.masscan(
-                    ip_list, masscan_path, masscan_rate)
-                if not AC_PORT_LIST:
+        try:
+            for ip in self.scan_list:
+                if "/" in ip:
+                    ip = cidr.CIDR(ip)
+                if not ip:
                     continue
-                self.masscan_ac[0] = 0
-                for ip_str in AC_PORT_LIST.keys():
+                ip_list = self.get_ip_list(ip)
+                for white_ip in self.white_list:
+                    if white_ip in ip_list:
+                        ip_list.remove(white_ip)
+                if self.mode == 1:
+                    masscan_path = self.config_ini['Masscan'].split('|')[2]
+                    masscan_rate = self.config_ini['Masscan'].split('|')[1]
+                    # 如果用户在前台关闭了ICMP存活探测则进行全IP段扫描
+                    if self.icmp:
+                        ip_list = self.get_ac_ip(ip_list)
+                    self.masscan_ac[0] = 1
+                    # 如果安装了Masscan即使用Masscan进行全端口扫描
+                    AC_PORT_LIST = self.masscan(
+                        ip_list, masscan_path, masscan_rate)
+                    if not AC_PORT_LIST:
+                        continue
+                    self.masscan_ac[0] = 0
+                    for ip_str in AC_PORT_LIST.keys():
+                        self.queue.put(ip_str)  # 加入队列
+                    self.scan_start()  # 开始扫描
+                else:
+                    all_ip_list.extend(ip_list)
+            if self.mode == 0:
+                if self.icmp:
+                    all_ip_list = self.get_ac_ip(all_ip_list)
+                for ip_str in all_ip_list:
                     self.queue.put(ip_str)  # 加入队列
-                self.scan_start()  # 开始扫描
-            else:
-                all_ip_list.extend(ip_list)
-        if self.mode == 0:
-            if self.icmp:
-                all_ip_list = self.get_ac_ip(all_ip_list)
-            for ip_str in all_ip_list:
-                self.queue.put(ip_str)  # 加入队列
-            self.scan_start()  # TCP探测模式开始扫描
+                self.scan_start()  # TCP探测模式开始扫描
+        except:
+            traceback.print_exc()
 
     def scan_start(self):
         for i in range(self.thread):  # 开始扫描
