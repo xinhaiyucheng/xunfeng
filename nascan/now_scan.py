@@ -1,8 +1,10 @@
 # coding:utf-8
 # author:gv·残亦
 import thread
+import traceback
 from lib.common import *
 from lib.start import *
+
 if __name__ == "__main__":
    try:
        CONFIG_INI = get_config()  # 读取配置
@@ -22,5 +24,5 @@ if __name__ == "__main__":
        s.masscan_ac = MASSCAN_AC
        s.statistics = STATISTICS
        s.run()
-   except Exception, e:
-       print e
+   except:
+       traceback.print_exc()
