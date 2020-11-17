@@ -106,14 +106,28 @@ def Addtask():
         if resultcheck == 'true':  # 结果集全选
             list = condition.strip().split(';')
             query = querylogic(list)
-            cursor = Mongo.coll['Info'].find(query)
-            for i in cursor:
-                tar = [i['ip'], i['port']]
-                targets.append(tar)
+            if 'domain' in query.keys(): # 查找域名
+                cursor = Mongo.coll['Domain'].find(query)
+                for i in cursor:
+                    domain80 = [i['domain'], 80]
+                    domain443 = [i['domain'], 443]
+                    targets.append(domain80)
+                    targets.append(domain443)
+            else:
+                cursor = Mongo.coll['Info'].find(query)
+                for i in cursor:
+                    tar = [i['ip'], i['port']]
+                    targets.append(tar)
         else:  # 当前页结果选择
             for i in ids.split(','):
-                tar = [i.split(':')[0], int(i.split(':')[1])]
-                targets.append(tar)
+                if ':' not in i: # 域名
+                    domain80 = [i, 80]
+                    domain443 = [i, 443]
+                    targets.append(domain80)
+                    targets.append(domain443)
+                else:
+                    tar = [i.split(':')[0], int(i.split(':')[1])]
+                    targets.append(tar)
         temp_result = True
         for p in plugin.split(','):
             query = querylogic(condition.strip().split(';'))

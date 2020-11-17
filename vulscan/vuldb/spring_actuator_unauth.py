@@ -15,32 +15,33 @@ def get_plugin_info():
     }
     return plugin_info
 
-def req(url):
+def req(url, key):
     headers = {
         'Connection': 'close',
     }
     r = requests.get(url, headers=headers, timeout=3, verify=False)
-    if 'profiles' in r.content:
+    if key in r.content:
         return True
     return False
 
 def check(ip, port, timeout):
     port = str(port)
-    path = '/env'
-    if port == '80':
-        url = 'http://%s%s' % (ip, path)
-    elif port == '443':
-        url = 'https://%s%s' % (ip, path)
-    else:
-        url = 'http://%s:%s%s' % (ip, port, path)
+    path_list = [('/env', 'profiles'), ('/actuator/env', 'profiles'), ('/health', 'description')]
+    for path, key in path_list:
+        if port == '80':
+            url = 'http://%s%s' % (ip, path)
+        elif port == '443':
+            url = 'https://%s%s' % (ip, path)
+        else:
+            url = 'http://%s:%s%s' % (ip, port, path)
 
-    try:
-        if req(url):
-            print u'未授权访问'
-            return u'未授权访问'
-
-    except Exception as e:
-        pass
+        try:
+            if req(url, key):
+                print u'未授权访问'
+                return u'未授权访问'
+                break
+        except Exception as e:
+            pass
 
 if __name__ == '__main__':
     check('43.240.130.72', 8888, 3)

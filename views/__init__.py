@@ -14,6 +14,6 @@ csrf.init_app(app)
 Mongo = Conn.MongoDB(app.config.get('DB'), app.config.get('PORT'), app.config.get('DBNAME'),
                      app.config.get('DBUSERNAME'), app.config.get('DBPASSWORD'))
 app.permanent_session_lifetime = timedelta(hours=6)
-page_size = 60
+page_size = 30
 sys.path.append(sys.path[0] + '/vulscan/vuldb/')
 file_path = os.path.split(os.path.realpath(__file__))[0] + '/../vulscan/vuldb/'
