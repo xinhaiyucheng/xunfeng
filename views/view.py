@@ -53,8 +53,14 @@ def Main():
     if q:  # 基于搜索条件显示结果
         result = q.strip().split(';')
         query = querylogic(result)
-        cursor = Mongo.coll['Info'].find(query).sort('time', -1).limit(page_size).skip((page - 1) * page_size)
-        return render_template('main.html', item=cursor, plugin=plugin, itemcount=cursor.count(),
+        if 'domain' in query.keys():
+            query_type = 'domain'
+            cursor = Mongo.coll['Domain'].find(query).limit(page_size).skip((page - 1) * page_size)
+            return render_template('main.html', item=cursor, plugin=plugin, itemcount=cursor.count(),
+                                   plugin_type=plugin_type, query=q, query_type=query_type)
+        else:
+            cursor = Mongo.coll['Info'].find(query).sort('time', -1).limit(page_size).skip((page - 1) * page_size)
+            return render_template('main.html', item=cursor, plugin=plugin, itemcount=cursor.count(),
                                plugin_type=plugin_type, query=q)
     else:  # 自定义，无任何结果，用户手工添加
         return render_template('main.html', item=[], plugin=plugin, itemcount=0, plugin_type=plugin_type)

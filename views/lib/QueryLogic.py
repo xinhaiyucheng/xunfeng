@@ -44,6 +44,8 @@ def querylogic(list):
                     for i in ('ip', 'banner', 'port', 'time', 'webinfo.tag', 'webinfo.title', 'server', 'hostname'):
                         filter_lst.append({i: {"$regex": q_value, '$options': 'i'}})
                     query['$or'] = filter_lst
+                elif q_key == 'domain':
+                    query['domain'] = {"$regex": q_value}
                 else:
                     query[q_key] = q_value
     else:

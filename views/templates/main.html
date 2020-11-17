@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 {% block css %}
     <link href="static/buss/css/main.css" rel="stylesheet" type="text/css"/>
+	<link href="static/buss/css/task.css" rel="stylesheet" type="text/css"/>
     <link href="static/plugin/sweetalert/sweetalert.css" rel="stylesheet" type="text/css"/>
     <link href="static/plugin/multiselect/css/multi-select.css" rel="stylesheet" type="text/css"/>
 {% endblock %}
@@ -48,42 +49,65 @@
                            style="position: absolute;right:33px">
                             <i class="zmdi zmdi-plus tag"></i>
                         </a>
-                        <a href="javascript:;" style="position: absolute;right:10px"><input
+						{% if query_type and query_type == 'domain' %}
+							<a href="javascript:;" style="position: absolute;right:10px"><input
                                 id="checkbox{{ loop.index0 }}" type="checkbox" class="itemcheck"
-                                infoid="{{ i['ip'] }}:{{ i['port'] }}"></a>
-                        <div class="tag-right">
-                            <h4 class="m-t-0 m-b-5" style="height: 25px">
-                                {% if i['server']=='web' %}
-                                    {% if i['port']==443 %}
-                                        <a href="https://{{ i['ip'] }}:{{ i['port'] }}" class="text-name"
-                                           target="_blank">{{ i['ip'] }}:{{ i['port'] }}</a>
-                                    {% else %}
-                                        <a href="http://{{ i['ip'] }}:{{ i['port'] }}" class="text-name"
-                                           target="_blank">{{ i['ip'] }}:{{ i['port'] }}</a>
-                                    {% endif %}
-                                {% else %}
-                                    {{ i['ip'] }}:{{ i['port'] }}
-                                {% endif %}
-                                <div class="label label-purple">{{ i['server'] }}</div>
-                                {% if 'tag' in i['webinfo'] and i['webinfo']['tag'] %}
-                                    {% for t in i['webinfo']['tag'] %}
-                                        <div class="label label-success" title="tag">{{ t }}</div>
-                                    {% endfor %}
-                                {% endif %}
-                                {% if 'title' in i['webinfo'] and i['webinfo']['title'] %}
-                                    <div class="label label-info"
-                                         title="{{ i['webinfo']['title'] }}">{{ i['webinfo']['title'] }}</div>
-                                {% endif %}
-                            </h4>
-                        </div>
-                        <p class="text-time text-uppercase m-b-0 font-13">{{ i['time'].strftime('%Y-%m-%d %H:%M:%S') }}</p>
-                        <div class="clearfix"></div>
-                        <div id="bg-primary{{ loop.index0 }}" class="panel-collapse collapse">
-                            {% if i['hostname'] %}
-                                <p class="text-purple m-b-10 font-13"><b>HostName: </b>{{ i['hostname'] }}</p>
-                            {% endif %}
-                            <p class="text-muted font-13"><b>Banner: </b>{{ i['banner'] }}</p>
-                        </div>
+                                infoid="{{ i['domain'] }}"></a>
+							<div class="tag-right">
+								<h4 class="m-t-0 m-b-5" style="height: 25px">
+									<p style="color:white">{{ i['domain'] }}</p>
+								</h4>
+							</div>
+							
+							<div style="line-height: 2">
+							{% for web in i['web'] %}
+								<p class="label label-type font-13">
+									<a href="{{ web['link'] }}" target="_blank" title="{{ web['title'] }}" style="color:white">{{ web['link'] }}</a>
+								</p>
+								<p class="label label-type font-13">{{ web['title'][:15] }}</p>
+								<p class="label label-type font-13">{{ web['status'] }}</p>
+								<br>
+							{% endfor %}
+							</div>
+
+						{% else %}
+							<a href="javascript:;" style="position: absolute;right:10px"><input
+									id="checkbox{{ loop.index0 }}" type="checkbox" class="itemcheck"
+									infoid="{{ i['ip'] }}:{{ i['port'] }}"></a>
+							<div class="tag-right">
+								<h4 class="m-t-0 m-b-5" style="height: 25px">
+									{% if i['server']=='web' %}
+										{% if i['port']==443 %}
+											<a href="https://{{ i['ip'] }}:{{ i['port'] }}" class="text-name"
+											   target="_blank">{{ i['ip'] }}:{{ i['port'] }}</a>
+										{% else %}
+											<a href="http://{{ i['ip'] }}:{{ i['port'] }}" class="text-name"
+											   target="_blank">{{ i['ip'] }}:{{ i['port'] }}</a>
+										{% endif %}
+									{% else %}
+										{{ i['ip'] }}:{{ i['port'] }}
+									{% endif %}
+									<div class="label label-purple">{{ i['server'] }}</div>
+									{% if 'tag' in i['webinfo'] and i['webinfo']['tag'] %}
+										{% for t in i['webinfo']['tag'] %}
+											<div class="label label-success" title="tag">{{ t }}</div>
+										{% endfor %}
+									{% endif %}
+									{% if 'title' in i['webinfo'] and i['webinfo']['title'] %}
+										<div class="label label-info"
+											 title="{{ i['webinfo']['title'] }}">{{ i['webinfo']['title'] }}</div>
+									{% endif %}
+								</h4>
+							</div>
+							<p class="text-time text-uppercase m-b-0 font-13">{{ i['time'].strftime('%Y-%m-%d %H:%M:%S') }}</p>
+							<div class="clearfix"></div>
+							<div id="bg-primary{{ loop.index0 }}" class="panel-collapse collapse">
+								{% if i['hostname'] %}
+									<p class="text-purple m-b-10 font-13"><b>HostName: </b>{{ i['hostname'] }}</p>
+								{% endif %}
+								<p class="text-muted font-13"><b>Banner: </b>{{ i['banner'] }}</p>
+							</div>
+						{% endif %}
                     </div>
                 </div>
             {% endfor %}
