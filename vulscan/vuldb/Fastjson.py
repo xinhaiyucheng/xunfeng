@@ -37,6 +37,7 @@ def check_dnslog2(target):
 
 def check(host, port, timeout):
     path = '/'
+    port = str(port)
     try:
         if port == '80':
             ssl_port = '443'
@@ -121,4 +122,4 @@ def check(host, port, timeout):
     return False
 
 if __name__ == '__main__':
-    check('biap-dev-auth.pingan.com', '80', 3)
+    check('biap-dev-auth.xxx.com', 80, 3)
