@@ -18,6 +18,14 @@ import urllib2
 import copy
 
 
+# 域名页
+@app.route('/domain')
+@logincheck
+def Domain():
+    page = int(request.args.get('page', '1'))
+    domains = Mongo.coll['Domain'].find({},{'target':0}).limit(page_size).skip((page - 1) * page_size)
+    return render_template('domain.html', item=domains)
+
 
 # 搜索页
 @app.route('/filter')
