@@ -215,6 +215,7 @@ def monitor():
         try:
             queue_count = na_task.find({"status": 0, "plan": 0}).count()
         except:
+            time.sleep(10)
             continue
         if queue_count:
             load = 1
