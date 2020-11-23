@@ -11,6 +11,7 @@ import re
 import uuid
 import os
 from kunpeng import kunpeng
+import traceback
 
 
 sys.path.append(sys.path[0] + '/vuldb')
@@ -211,7 +212,10 @@ def update_target(query):
 def monitor():
     global PASSWORD_DIC, THREAD_COUNT, TIMEOUT, WHITE_LIST
     while True:
-        queue_count = na_task.find({"status": 0, "plan": 0}).count()
+        try:
+            queue_count = na_task.find({"status": 0, "plan": 0}).count()
+        except:
+            continue
         if queue_count:
             load = 1
         else:
@@ -243,7 +247,7 @@ def get_config():
         white_list = white_row['value'].split('\n')
         return password_dic, thread_count, timeout, white_list
     except Exception, e:
-        print e
+        traceback.print_exc()
 
 def install_kunpeng_plugin():
     time_ = datetime.datetime.now()
@@ -328,7 +332,7 @@ def kp_check():
                 na_update.insert(row)
                 time.sleep(60 * 60 * 48)
         except Exception as e:
-            print e
+            traceback.print_exc()
         time.sleep(60 * 30)
 
 
@@ -342,7 +346,7 @@ def kp_update():
                 na_plugin.delete_many({'_id':re.compile('^KP')})
                 install_kunpeng_plugin()
         except Exception as e:
-            print e
+            traceback.print_exc()
         time.sleep(10)
 
 
@@ -356,6 +360,7 @@ if __name__ == '__main__':
         try:
             task_id, task_plan, task_target, task_plugin = queue_get()
             if task_id == '':
+                print 'No task...waiting'
                 time.sleep(10)
                 continue
             if PLUGIN_DB:
@@ -370,11 +375,11 @@ if __name__ == '__main__':
                             thread.start_new_thread(
                                 vulscan, (task_id, task_netloc, task_plugin))
                         except Exception as e:
-                            print e
+                            traceback.print_exc()
                         break
                     else:
                         time.sleep(2)
             if task_plan == 0:
                 na_task.update({"_id": task_id}, {"$set": {"status": 2}})
         except Exception as e:
-            print e
+            traceback.print_exc()
